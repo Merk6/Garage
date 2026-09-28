@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
@@ -8,8 +9,11 @@ public class PlayerInteraction : MonoBehaviour
     GameObject itemToGrab = null;
     float rayDistance = 5f;
     public float itemHeldSpeed;
+    public float itemRoatateSpeed;
     public float itemDistance;
     bool grabbed = false;
+
+    public Transform itemFloatPos;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,7 +24,6 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
         if (Physics.Raycast(ray, out hit, rayDistance, item))
         {
             GrabItem(hit);
@@ -34,6 +37,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         ray = new Ray(gameObject.transform.position, gameObject.transform.forward);
 
         Debug.DrawRay(ray.origin, ray.direction * rayDistance);
@@ -41,16 +45,19 @@ public class PlayerInteraction : MonoBehaviour
         if (grabbed)
         {
             Rigidbody itemRB = itemToGrab.GetComponent<Rigidbody>();
-            itemRB.useGravity = false;
+            itemRB.isKinematic = true;
 
-            itemToGrab.transform.SetPositionAndRotation(Vector3.Lerp(itemToGrab.transform.position, gameObject.transform.position + gameObject.transform.forward * itemDistance, itemHeldSpeed + Time.deltaTime), gameObject.transform.rotation);
+            itemToGrab.transform.position = itemFloatPos.transform.position; //Vector3.Lerp(itemToGrab.transform.position, itemFloatPos.transform.position, itemHeldSpeed);
+            //itemToGrab.transform.LookAt(gameObject.transform.position, itemToGrab.transform.up);
+
+            itemToGrab.transform.rotation = Quaternion.Slerp(itemToGrab.transform.rotation, gameObject.transform.rotation, itemRoatateSpeed);
         }
         else
         {
             if (itemToGrab != null)
             {
                 Rigidbody itemRB = itemToGrab.GetComponent<Rigidbody>();
-                itemRB.useGravity = true;
+                itemRB.isKinematic = false;
 
                 itemToGrab = null;
             }

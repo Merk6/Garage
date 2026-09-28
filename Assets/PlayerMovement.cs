@@ -27,13 +27,19 @@ public class PlayerMovement : MonoBehaviour
 
     public void Update()
     {
-        SpeedControl();
+        /*SpeedControl();
         MyInput();
-        rB.linearDamping = groundDrag;
+        rB.linearDamping = groundDrag;*/
+
+        //testing to see if interpolation gets any better
     }
 
     private void FixedUpdate()
     {
+        SpeedControl();
+        MyInput();
+        rB.linearDamping = groundDrag;
+        
         //calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         rB.AddForce(10f * moveSpeed * moveDirection.normalized, ForceMode.Force);
