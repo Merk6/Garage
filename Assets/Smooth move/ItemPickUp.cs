@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.AdaptivePerformance;
 
 public class ItemPickUp : MonoBehaviour
 {
@@ -11,9 +10,13 @@ public class ItemPickUp : MonoBehaviour
     [Header("Physics Parameters")]
     [SerializeField] private float pickupRange = 5.0f;
     [SerializeField] private float pickupForce = 150.0f;
+    private float x;
 
     private void Update()
     {
+        x = holdArea.transform.localPosition.z;
+        x = Mathf.Clamp(x, 2f, 15f);
+        
         if (Input.GetMouseButtonDown(0))
         {
             if (heldObj == null)
@@ -34,6 +37,7 @@ public class ItemPickUp : MonoBehaviour
         if (heldObj != null)
         {
             MoveObject();
+            //itemRange = Vector3.Distance(gameObject.transform.position, heldObj.transform.position);
         }
     }
 
@@ -47,12 +51,27 @@ public class ItemPickUp : MonoBehaviour
             heldObjRB.AddForce(moveDirection * pickupForce);
         }
 
-        holdArea.transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel"));
-
+        if(holdArea.localPosition.z >= 2 && holdArea.localPosition.z <= 5)
+        {
+            holdArea.localPosition += Vector3.forward * Input.GetAxis("Mouse ScrollWheel");
+        }
+        else
+        {
+            if (holdArea.localPosition.z <= 2)
+            {
+                holdArea.localPosition = new Vector3(0,0,2);
+            }
+            else if (holdArea.localPosition.z > 5)
+            {
+                holdArea.localPosition = new Vector3(0, 0, 5);
+            }
+        }
     }
 
     void PickUpObject(GameObject pickObj)
     {
+        holdArea.localPosition = new Vector3(0, 0, 2);
+        
         if(pickObj.GetComponent<Rigidbody>())
         {
             heldObjRB = pickObj.GetComponent<Rigidbody>();
